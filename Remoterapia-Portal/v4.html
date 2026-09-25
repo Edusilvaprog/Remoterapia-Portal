@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--sky:#0284c7;--navy:#034480;--dark:#032b57;--pink:#E52E87;--bg:#e0f2fe;--card:#fff;--border:rgba(0,0,0,.07);--text:#0f172a;--muted:#64748b;--dim:#94a3b8;--green:#10b981;--rose:#f43f5e;--amber:#f59e0b;--wpp:#25D366;--sb:240px;--hd:60px}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(8px)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+.fu{animation:fadeUp .35s cubic-bezier(.22,.61,.36,1) both}
+.d1{animation-delay:.06s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}.d4{animation-delay:.24s}
+
+.sidebar{width:var(--sb);height:100vh;position:fixed;left:0;top:0;background:linear-gradient(180deg,#032b57 0%,#071a33 100%);display:flex;flex-direction:column;z-index:50;border-right:1px solid rgba(255,255,255,.06)}
+.sb-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.sb-logo-ic{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px;color:#7dd3fc}
+.sb-logo-t{font-size:15px;font-weight:900;color:#fff;letter-spacing:.01em}
+.sb-logo-s{font-size:8px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.18em}
+.sidebar nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:3px}
+.ni{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:12.5px;font-weight:800;color:rgba(255,255,255,.5);transition:all .15s}
+.ni:hover{color:#fff;background:rgba(255,255,255,.07)}
+.ni.on{background:linear-gradient(135deg,#0284c7,#034480);color:#fff;box-shadow:0 4px 14px rgba(2,132,199,.35)}
+.ni svg{width:17px;height:17px;flex-shrink:0}
+.sb-ft{padding:12px 10px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-ft a{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:11px;font-weight:700;color:#25D366;text-decoration:none;background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.1);transition:.15s}
+.sb-ft a:hover{background:rgba(37,211,102,.14)}
+
+.header{height:var(--hd);position:fixed;top:0;left:var(--sb);right:0;background:linear-gradient(90deg,#032b57,#0284c7,#034480);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:40;border-bottom:1px solid rgba(255,255,255,.12)}
+.hd-av{width:38px;height:38px;border-radius:14px;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:12px;position:relative;cursor:pointer}
+.hd-av .dot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;background:#34d399;border:2px solid #032b57;box-shadow:0 0 6px rgba(52,211,153,.9)}
+.dock{display:flex;align-items:center;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);padding:3px;border-radius:14px;border:1px solid rgba(255,255,255,.18);gap:2px}
+.dk-b{width:34px;height:34px;border-radius:10px;border:none;background:transparent;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s;position:relative}
+.dk-b:hover{background:rgba(255,255,255,.18)}
+.dk-b:active{transform:scale(.88)}
+.dk-b .nd{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:#7dd3fc;box-shadow:0 0 6px #38bdf8}
+
+.main{margin-left:var(--sb);padding-top:var(--hd);min-height:100vh}
+.ct{padding:24px 28px;max-width:1200px}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:1.2rem;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);transition:box-shadow .2s}
+.card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:9999px;font-size:9px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+.bn{background:#032b57;color:#fff}.bs{background:#e0f2fe;color:#0284c7;border:1px solid #bae6fd}.ba{background:#fffbeb;color:#92400e;border:1px solid #fde68a}.bg{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}.br{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}.bp{background:#fdf2f8;color:#9d174d;border:1px solid #fbcfe8}
+
+.btn{padding:11px 20px;border-radius:14px;font-size:11.5px;font-weight:900;letter-spacing:.03em;cursor:pointer;transition:all .12s;border:none;text-transform:uppercase}
+.btn:active{transform:scale(.96)}
+.bb{background:linear-gradient(135deg,#0284c7,#034480);color:#fff;box-shadow:0 4px 14px rgba(2,132,199,.25)}
+.bb:hover{filter:brightness(1.08)}
+.bpk{background:linear-gradient(135deg,#E52E87,#be185d);color:#fff;box-shadow:0 4px 14px rgba(229,46,135,.25)}
+.bpk:hover{filter:brightness(1.08)}
+.bgh{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.bgh:hover{background:#e2e8f0}
+.bro{background:transparent;color:#f43f5e;border:1px solid #fecaca}
+.bro:hover{background:#fef2f2}
+.brf{background:#f43f5e;color:#fff}
+
+.pill-t{display:flex;gap:5px}.pill-u{height:8px;flex:1;border-radius:99px;background:linear-gradient(90deg,#E52E87,#be185d);box-shadow:0 1px 3px rgba(229,46,135,.25)}.pill-f{height:8px;flex:1;border-radius:99px;background:#f1f5f9;border:1px solid #e2e8f0}
+
+.step{overflow:hidden;max-height:0;opacity:0;transition:max-height .4s cubic-bezier(.22,.61,.36,1),opacity .3s,margin .3s;margin-bottom:0}
+.step.show{max-height:800px;opacity:1;margin-bottom:14px}
+
+.cal-d{width:100%;aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+.cal-d:hover:not(.co):not(.cn){background:#f0f9ff;color:#0284c7;border-color:#bae6fd}
+.cal-d.cn{background:#0284c7;color:#fff;font-weight:900;transform:scale(1.08);z-index:1;box-shadow:0 3px 10px rgba(2,132,199,.35);border-color:#0284c7}
+.cal-d.co{color:#cbd5e1;opacity:.35;cursor:default}
+
+.chip{padding:10px 18px;border-radius:12px;font-size:12px;font-weight:800;color:var(--muted);border:1.5px solid #e2e8f0;cursor:pointer;transition:all .15s;text-align:center;background:#fff}
+.chip:hover:not(.con){background:#f8fafc;border-color:#93c5fd}
+.chip.con{background:linear-gradient(135deg,#0284c7,#034480);color:#fff;border-color:#0284c7;box-shadow:0 3px 10px rgba(2,132,199,.3)}
+
+.lk{width:64px;height:64px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:var(--muted);border:1.5px solid #e2e8f0;cursor:pointer;transition:all .15s;background:#fff;gap:2px;font-size:12px}
+.lk:hover:not(.lo){border-color:#93c5fd;background:#f0f9ff}
+.lk.lo{border-color:#0284c7;background:#eff6ff;color:#0284c7;box-shadow:0 0 0 3px rgba(2,132,199,.12)}
+
+.ri{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #f1f5f9;transition:.12s}
+.ri:hover{background:#f8fafc}
+.ri:last-child{border-bottom:none}
+
+.mr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:.12s;border-radius:0}
+.mr:hover{background:#f8fafc}
+.mr:last-child{border-bottom:none}
+
+.star{cursor:pointer;font-size:20px;transition:.1s}.star.on{color:#f59e0b}.star.off{color:#e2e8f0}.star:hover{transform:scale(1.25)}
+
+.m-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:200}
+.m-box{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:1.8rem;padding:26px;max-width:460px;width:92%;box-shadow:0 25px 60px rgba(0,0,0,.18);animation:scaleIn .25s cubic-bezier(.22,.61,.36,1);max-height:85vh;overflow-y:auto}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:10px;padding:14px 22px;border-radius:16px;backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,.15);animation:toastIn .4s cubic-bezier(.16,1,.3,1);font-size:13px;font-weight:900;color:#fff;pointer-events:none}
+.toast.out{animation:toastOut .35s ease both}
+.toast-ok{background:rgba(16,185,129,.92);border:1px solid rgba(52,211,153,.5)}
+.toast-warn{background:rgba(245,158,11,.92);border:1px solid rgba(251,191,36,.5)}
+
+.cnt-b{width:40px;height:40px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;font-size:18px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s}
+.cnt-b:hover{background:#f1f5f9;border-color:#93c5fd}
+
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.stat-val{font-size:26px;font-weight:900;color:var(--text);line-height:1}
+.stat-lbl{font-size:9px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+<div class="sb-logo-ic">⚓</div>
+<div>
+<span class="sb-logo-t">Remoterapia</span>
+<span class="sb-logo-s">Agendamento</span>
+</div>
+</div>
+  <nav>
+    <div class="ni on" onclick="go('inicio')">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 12l9-8 9 8M5 10v10h5v-6h4v6h5V10"/>
+</svg> Início</div>
+    <div class="ni" onclick="go('agendar')">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M3 10h18M8 2v4M16 2v4M12 14v4M10 16h4"/>
+</svg> Agendar</div>
+    <div class="ni" onclick="go('eventos')">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"/>
+<path d="M12 2a15 15 0 010 20M2 12h20"/>
+</svg> Eventos</div>
+    <div class="ni" onclick="go('historico')">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"/>
+<path d="M12 6v6l4 2"/>
+</svg> Histórico</div>
+    <div class="ni" onclick="go('perfil')">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="8" r="4"/>
+<path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+</svg> Meu Perfil</div>
+  </nav>
+  <div class="sb-ft">
+<a href="https://wa.me/5513997421804" target="_blank">
+<svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+<path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.28-.1-.48-.15-.68.15s-.78.97-.95 1.17c-.18.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.18-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.52-.08-.15-.68-1.64-.93-2.25-.25-.59-.5-.5-.68-.51h-.58c-.2 0-.52.07-.8.38-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.58-.35z"/>
+</svg>Suporte WhatsApp</a>
+</div>
+</aside>
+
+<!-- HEADER -->
+<header class="header">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="hd-av" onclick="go('perfil')">JS<span class="dot">
+</span>
+</div>
+    <div>
+<div style="font-size:9px;font-weight:900;color:rgba(186,230,253,.9);text-transform:uppercase;letter-spacing:.12em;">Olá, João</div>
+<div style="font-size:15px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.02em;" id="pg-t">Início</div>
+</div>
+  </div>
+  <div class="dock">
+    <button class="dk-b" onclick="openM('notif')">
+<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+</svg>
+<span class="nd">
+</span>
+</button>
+    <button class="dk-b" onclick="openM('logout')" style="color:#fda4af">
+<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+</svg>
+</button>
+  </div>
+</header>
+
+<div class="main">
+<div class="ct">
+
+<!-- ====== INÍCIO ====== -->
+<div id="v-inicio">
+  <!-- COTAS + STATS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px;" class="fu">
+    <div class="stat-card" style="border-top:3px solid #E52E87;">
+<div class="stat-val">1<span style="font-size:14px;color:var(--dim);font-weight:700;">/2</span>
+</div>
+<div class="stat-lbl">Cotas da Semana</div>
+<div class="pill-t" style="margin-top:8px;">
+<div class="pill-u">
+</div>
+<div class="pill-f">
+</div>
+</div>
+</div>
+    <div class="stat-card" style="border-top:3px solid #0284c7;">
+<div class="stat-val">8</div>
+<div class="stat-lbl">Créditos Mensais</div>
+<div style="margin-top:6px;">
+<span class="badge bg" style="font-size:8px;">Renovam dia 15</span>
+</div>
+</div>
+    <div class="stat-card" style="border-top:3px solid #10b981;">
+<div class="stat-val">2</div>
+<div class="stat-lbl">Reservas Ativas</div>
+<div style="margin-top:6px;">
+<span class="badge bg" style="font-size:8px;">Confirmadas</span>
+</div>
+</div>
+    <div class="stat-card" style="border-top:3px solid #034480;">
+<div style="margin-bottom:4px;">
+<span class="badge bs">Mensalista</span>
+</div>
+<div class="stat-lbl" style="margin-top:6px;">Plano Ativo</div>
+<div style="font-size:10px;color:var(--green);font-weight:700;margin-top:4px;">Em dia · Venc. 15</div>
+</div>
+  </div>
+  <button class="btn bpk fu d1" onclick="go('agendar')" style="width:100%;padding:16px;font-size:13px;margin-bottom:18px;">Solicitar Novo Agendamento ➔</button>
+  <!-- AGENDAMENTOS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;" class="fu d2">
+<span class="badge bn">Seus Agendamentos (2)</span>
+<span style="font-size:10px;font-weight:800;color:var(--dim);">Próximas remadas</span>
+</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" class="fu d3">
+    <div class="card" style="border-left:4px solid #1D70B8;display:flex;gap:16px;">
+      <div style="text-align:center;min-width:56px;background:#eff6ff;border:1px solid #bae6fd;border-radius:14px;padding:10px 6px;">
+<div style="font-size:9px;font-weight:900;color:#0284c7;">SÁB</div>
+<div style="font-size:26px;font-weight:900;line-height:1;">26</div>
+<div style="font-size:8px;color:var(--dim);font-weight:700;">SET</div>
+</div>
+      <div style="flex:1;">
+<div style="font-size:11px;font-weight:700;color:var(--dim);">Clube Mensalista</div>
+<div style="font-size:16px;font-weight:900;">08:00 às 10:00</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+<span class="badge bg" style="font-size:8px;">
+<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:3px;box-shadow:0 0 5px #10b981;">
+</span>Confirmado</span>
+</div>
+<div style="font-size:10px;color:var(--muted);margin-top:8px;">🛶 Caiaque Oceânico 2 · 🔑 Locker #04</div>
+<button class="btn bro" style="margin-top:10px;font-size:9px;padding:7px 14px;" onclick="openM('cancelar')">✕ Cancelar</button>
+</div>
+    </div>
+    <div class="card" style="border-left:4px solid #1D70B8;display:flex;gap:16px;">
+      <div style="text-align:center;min-width:56px;background:#eff6ff;border:1px solid #bae6fd;border-radius:14px;padding:10px 6px;">
+<div style="font-size:9px;font-weight:900;color:#0284c7;">TER</div>
+<div style="font-size:26px;font-weight:900;line-height:1;">29</div>
+<div style="font-size:8px;color:var(--dim);font-weight:700;">SET</div>
+</div>
+      <div style="flex:1;">
+<div style="font-size:11px;font-weight:700;color:var(--dim);">Clube Mensalista</div>
+<div style="font-size:16px;font-weight:900;">06:00 às 08:00</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+<span class="badge bg" style="font-size:8px;">
+<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:3px;box-shadow:0 0 5px #10b981;">
+</span>Confirmado</span>
+</div>
+<div style="font-size:10px;color:var(--muted);margin-top:8px;">🛶 Caiaque Duplo 1 · 🔑 Locker #02</div>
+<button class="btn bro" style="margin-top:10px;font-size:9px;padding:7px 14px;" onclick="openM('cancelar')">✕ Cancelar</button>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== AGENDAR ====== -->
+<div id="v-agendar" style="display:none;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div>
+      <div class="card fu" style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+<div style="font-size:16px;font-weight:900;text-transform:uppercase;">Setembro 2026</div>
+<div style="display:flex;gap:4px;">
+<button class="btn bgh" style="padding:5px 12px;font-size:15px;">‹</button>
+<button class="btn bgh" style="padding:5px 12px;font-size:15px;">›</button>
+</div>
+</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;margin-bottom:8px;">
+<span style="font-size:10px;font-weight:900;color:var(--dim);">DOM</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">SEG</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">TER</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">QUA</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">QUI</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">SEX</span>
+<span style="font-size:10px;font-weight:900;color:var(--dim);">SÁB</span>
+</div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">
+          <div class="cal-d co">
+</div>
+<div class="cal-d co">1</div>
+<div class="cal-d co">2</div>
+<div class="cal-d co">3</div>
+<div class="cal-d co">4</div>
+<div class="cal-d co">5</div>
+<div class="cal-d co">6</div>
+          <div class="cal-d co">7</div>
+<div class="cal-d co">8</div>
+<div class="cal-d co">9</div>
+<div class="cal-d co">10</div>
+<div class="cal-d co">11</div>
+<div class="cal-d co">12</div>
+<div class="cal-d co">13</div>
+          <div class="cal-d co">14</div>
+<div class="cal-d co">15</div>
+<div class="cal-d co">16</div>
+<div class="cal-d co">17</div>
+<div class="cal-d co">18</div>
+<div class="cal-d co">19</div>
+<div class="cal-d co">20</div>
+          <div class="cal-d co">21</div>
+<div class="cal-d co" title="Seg - Manutenção">22</div>
+<div class="cal-d" onclick="pickDay(this)">23</div>
+<div class="cal-d" onclick="pickDay(this)">24</div>
+<div class="cal-d" onclick="pickDay(this)">25</div>
+<div class="cal-d" onclick="pickDay(this)">26</div>
+<div class="cal-d" onclick="pickDay(this)">27</div>
+          <div class="cal-d co">28</div>
+<div class="cal-d co" title="Seg - Manutenção">29</div>
+<div class="cal-d" onclick="pickDay(this)">30</div>
+        </div>
+      </div>
+      <!-- TURNO -->
+      <div class="step" id="st-turno">
+<div class="card fu">
+<div style="font-size:12px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Turno da Saída</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+<div class="chip" onclick="pickTurno(this)">06:00 às 08:00</div>
+<div class="chip" onclick="pickTurno(this)">08:00 às 10:00</div>
+</div>
+</div>
+</div>
+    </div>
+    <div>
+      <!-- BARCO -->
+      <div class="step" id="st-barco">
+<div class="card fu" style="margin-bottom:14px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+<span style="font-size:12px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">Embarcação</span>
+<span class="badge bs">3 livres</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;" id="bl">
+        <div class="card" style="padding:14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="pickBoat(this)">
+<div>
+<div style="font-size:13px;font-weight:800;">Caiaque Oceânico 1</div>
+<div style="font-size:10px;color:#10b981;font-weight:700;">● LIVRE</div>
+</div>
+<div class="ck" style="width:24px;height:24px;border-radius:8px;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;transition:.15s;">
+</div>
+</div>
+        <div class="card" style="padding:14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="pickBoat(this)">
+<div>
+<div style="font-size:13px;font-weight:800;">Caiaque Oceânico 2</div>
+<div style="font-size:10px;color:#10b981;font-weight:700;">● LIVRE</div>
+</div>
+<div class="ck" style="width:24px;height:24px;border-radius:8px;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;transition:.15s;">
+</div>
+</div>
+        <div class="card" style="padding:14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="pickBoat(this)">
+<div>
+<div style="font-size:13px;font-weight:800;">Caiaque Duplo 1</div>
+<div style="font-size:10px;color:#10b981;font-weight:700;">● LIVRE</div>
+</div>
+<div class="ck" style="width:24px;height:24px;border-radius:8px;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;transition:.15s;">
+</div>
+</div>
+        <div class="card" style="padding:14px;opacity:.4;">
+<div>
+<div style="font-size:13px;font-weight:800;">Caiaque Oceânico 3</div>
+<div style="font-size:10px;color:#f43f5e;font-weight:700;">● Manutenção</div>
+</div>
+</div>
+      </div>
+</div>
+</div>
+      <!-- LOCKER -->
+      <div class="step" id="st-lk">
+<div class="card fu" style="margin-bottom:14px;">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+<span style="font-size:12px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">Guarda-Volumes</span>
+<span class="badge bs">6 livres</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#01</div>
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#02</div>
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#04</div>
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#05</div>
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#07</div>
+<div class="lk" onclick="pickLk(this)">
+<span>🔑</span>#09</div>
+</div>
+</div>
+</div>
+      <!-- RESUMO -->
+      <div class="step" id="st-res">
+<div class="fu" style="background:linear-gradient(135deg,#0f172a,#172554,#0f172a);border:1px solid rgba(59,130,246,.2);border-radius:1.4rem;padding:20px;color:#fff;">
+<div style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:#7dd3fc;margin-bottom:14px;">Resumo Executivo</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px;">
+<div style="font-size:9px;font-weight:700;color:#7dd3fc;text-transform:uppercase;">Data & Turno</div>
+<div style="font-size:14px;font-weight:900;margin-top:4px;" id="rd">
+</div>
+<div style="font-size:12px;color:rgba(255,255,255,.55);" id="rt">
+</div>
+</div>
+<div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px;">
+<div style="font-size:9px;font-weight:700;color:#7dd3fc;text-transform:uppercase;">Embarcação & Locker</div>
+<div style="font-size:14px;font-weight:900;margin-top:4px;" id="rb">
+</div>
+<div style="font-size:12px;color:rgba(255,255,255,.55);" id="rl">
+</div>
+</div>
+</div>
+<button class="btn" onclick="toast('Agendamento confirmado com sucesso!','ok')" style="width:100%;margin-top:16px;background:linear-gradient(135deg,#0284c7,#034480);color:#fff;padding:16px;font-size:13px;">Confirmar Agendamento ➔</button>
+</div>
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== EVENTOS ====== -->
+<div id="v-eventos" style="display:none;">
+  <div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;" class="fu">Nossos Clubes</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;" class="fu d1">
+    <div class="card" style="border-top:3px solid #0284c7;">
+<div style="font-size:17px;font-weight:900;">Clube Mensalista</div>
+<div style="font-size:22px;font-weight:900;color:#0284c7;margin:10px 0;">R$ 150<span style="font-size:13px;color:var(--dim);">/mês</span>
+</div>
+<div style="font-size:12px;color:var(--muted);line-height:2;">✓ 2 remadas semanais livres<br>✓ Equipamento completo incluso<br>✓ Armário para pertences no local</div>
+<button class="btn bb" style="width:100%;margin-top:14px;" onclick="openM('clube')">Assinar Clube Mensalista</button>
+</div>
+    <div class="card" style="border-top:3px solid #0d9488;">
+<div style="font-size:17px;font-weight:900;">Clube Guardaria</div>
+<div style="font-size:22px;font-weight:900;color:#0d9488;margin:10px 0;">R$ 150<span style="font-size:13px;color:var(--dim);">/mês</span>
+</div>
+<div style="font-size:12px;color:var(--muted);line-height:2;">✓ Vaga para sua embarcação na areia<br>✓ Apoio na entrada e saída do mar<br>✓ Ducha de água doce após o treino</div>
+<button class="btn" style="width:100%;margin-top:14px;background:linear-gradient(135deg,#0d9488,#065f46);color:#fff;" onclick="openM('clube')">Assinar Clube Guardaria</button>
+</div>
+  </div>
+  <div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;" class="fu d2">Eventos Oficiais</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;" class="fu d3">
+    <div class="card" style="padding:0;overflow:hidden;">
+<div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0369a1,#0c4a6e);display:flex;align-items:flex-end;padding:12px;">
+<span class="badge" style="background:rgba(0,0,0,.5);color:#fff;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15);font-size:8px;">
+<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:4px;">
+</span>8 vagas restantes</span>
+</div>
+<div style="padding:16px;">
+<div style="font-size:15px;font-weight:900;text-transform:uppercase;">Expedição Ilha das Palmas</div>
+<div style="font-size:12px;color:#0284c7;font-weight:700;margin-top:4px;">Sáb, 28 Set · 05:15</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;">
+<span class="badge bs" style="font-size:8px;">✓ Café Caiçara</span>
+<span class="badge bs" style="font-size:8px;">✓ Caiaque Solo ou Duplo</span>
+<span class="badge bs" style="font-size:8px;">✓ Fotos GoPro</span>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:12px;">
+<span style="font-size:9px;color:var(--dim);font-weight:700;">Valor da Inscrição</span>
+<div style="font-size:20px;font-weight:900;">R$ 120,00</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+<button class="btn bgh" onclick="openM('info')">Ver Detalhes</button>
+<button class="btn bb" onclick="openM('checkout')">Garantir Vaga ➔</button>
+</div>
+</div>
+</div>
+    <div class="card" style="padding:0;overflow:hidden;">
+<div style="width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#4338ca,#312e81);display:flex;align-items:flex-end;padding:12px;">
+<span class="badge" style="background:rgba(0,0,0,.5);color:#fff;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.15);font-size:8px;">
+<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#22c55e;margin-right:4px;">
+</span>14 vagas restantes</span>
+</div>
+<div style="padding:16px;">
+<div style="font-size:15px;font-weight:900;text-transform:uppercase;">Remada Noturna Lua Cheia</div>
+<div style="font-size:12px;color:#0284c7;font-weight:700;margin-top:4px;">Sex, 10 Out · 19:30</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;">
+<span class="badge bs" style="font-size:8px;">✓ Iluminação LED</span>
+<span class="badge bs" style="font-size:8px;">✓ Equipamento Completo</span>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;margin-top:12px;">
+<span style="font-size:9px;color:var(--dim);font-weight:700;">Valor da Inscrição</span>
+<div style="font-size:20px;font-weight:900;">R$ 90,00</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+<button class="btn bgh" onclick="openM('info')">Ver Detalhes</button>
+<button class="btn bb" onclick="openM('checkout')">Garantir Vaga ➔</button>
+</div>
+</div>
+</div>
+  </div>
+</div>
+
+<!-- ====== HISTÓRICO ====== -->
+<div id="v-historico" style="display:none;">
+  <div style="display:flex;gap:6px;margin-bottom:16px;" class="fu">
+<div class="chip con" onclick="pickF(this)">Todas (4)</div>
+<div class="chip" onclick="pickF(this)">Concluídas (2)</div>
+<div class="chip" onclick="pickF(this)">Expedições (1)</div>
+<div class="chip" onclick="pickF(this)">Canceladas (1)</div>
+</div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;" class="fu d1">
+<svg width="14" height="14" fill="none" stroke="var(--dim)" stroke-width="2" viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M3 10h18"/>
+</svg>
+<span style="font-size:13px;font-weight:900;">Setembro 2026</span>
+<span class="badge bs">3 atividades</span>
+</div>
+  <div class="card fu d2" style="padding:0;margin-bottom:16px;">
+    <div class="ri" style="border-left:4px solid #10b981;">
+<div style="text-align:center;min-width:52px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:8px 6px;">
+<div style="font-size:9px;font-weight:900;color:#10b981;">SÁB</div>
+<div style="font-size:20px;font-weight:900;line-height:1;">14</div>
+<div style="font-size:8px;color:var(--dim);">SET</div>
+</div>
+<div style="flex:1;padding-left:14px;">
+<div style="font-size:13px;font-weight:800;">08:00 às 10:00</div>
+<div style="font-size:11px;color:var(--muted);">Caiaque Oceânico 2 · Locker #05</div>
+</div>
+<span class="badge bg">Concluída</span>
+<div id="s1">
+<span class="star on" onclick="rate('s1',1)">★</span>
+<span class="star on" onclick="rate('s1',2)">★</span>
+<span class="star on" onclick="rate('s1',3)">★</span>
+<span class="star on" onclick="rate('s1',4)">★</span>
+<span class="star off" onclick="rate('s1',5)">★</span>
+<span style="font-size:11px;font-weight:900;color:#f59e0b;margin-left:4px;">4.0</span>
+</div>
+</div>
+    <div class="ri" style="border-left:4px solid #f59e0b;">
+<div style="text-align:center;min-width:52px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:8px 6px;">
+<div style="font-size:9px;font-weight:900;color:#f59e0b;">DOM</div>
+<div style="font-size:20px;font-weight:900;line-height:1;">07</div>
+<div style="font-size:8px;color:var(--dim);">SET</div>
+</div>
+<div style="flex:1;padding-left:14px;">
+<div style="font-size:13px;font-weight:800;">14:00 às 16:00</div>
+<div style="font-size:11px;color:var(--muted);">Caiaque Duplo 1</div>
+</div>
+<span class="badge ba">Cancelada (Clima)</span>
+<button class="btn bb" style="font-size:9px;padding:8px 16px;" onclick="go('agendar')">Reagendar ➔</button>
+</div>
+    <div class="ri" style="border-left:4px solid #0284c7;">
+<div style="text-align:center;min-width:52px;background:#eff6ff;border:1px solid #bae6fd;border-radius:12px;padding:8px 6px;">
+<div style="font-size:9px;font-weight:900;color:#0284c7;">SÁB</div>
+<div style="font-size:20px;font-weight:900;line-height:1;">03</div>
+<div style="font-size:8px;color:var(--dim);">SET</div>
+</div>
+<div style="flex:1;padding-left:14px;">
+<div style="font-size:13px;font-weight:800;">Expedição Ilha das Palmas</div>
+<div style="font-size:11px;color:var(--muted);">🎟️ Inscrição Confirmada</div>
+</div>
+<span class="badge bs">Expedição</span>
+<button class="btn bgh" style="font-size:9px;padding:8px 16px;" onclick="go('perfil')">Meus Eventos ➔</button>
+</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;" class="fu d3">
+<svg width="14" height="14" fill="none" stroke="var(--dim)" stroke-width="2" viewBox="0 0 24 24">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M3 10h18"/>
+</svg>
+<span style="font-size:13px;font-weight:900;">Agosto 2026</span>
+<span class="badge bs">1 atividade</span>
+</div>
+  <div class="card fu d4" style="padding:0;margin-bottom:16px;">
+<div class="ri" style="border-left:4px solid #10b981;">
+<div style="text-align:center;min-width:52px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:8px 6px;">
+<div style="font-size:9px;font-weight:900;color:#10b981;">DOM</div>
+<div style="font-size:20px;font-weight:900;line-height:1;">25</div>
+<div style="font-size:8px;color:var(--dim);">AGO</div>
+</div>
+<div style="flex:1;padding-left:14px;">
+<div style="font-size:13px;font-weight:800;">08:00 às 10:00</div>
+<div style="font-size:11px;color:var(--muted);">Caiaque Oceânico 1 · Locker #02</div>
+</div>
+<span class="badge bg">Concluída</span>
+<div id="s3">
+<span class="star on" onclick="rate('s3',1)">★</span>
+<span class="star on" onclick="rate('s3',2)">★</span>
+<span class="star on" onclick="rate('s3',3)">★</span>
+<span class="star on" onclick="rate('s3',4)">★</span>
+<span class="star on" onclick="rate('s3',5)">★</span>
+<span style="font-size:11px;font-weight:900;color:#f59e0b;margin-left:4px;">5.0</span>
+</div>
+</div>
+</div>
+  <div style="text-align:right;">
+<a href="https://wa.me/5513997421804?text=Gostaria+de+informações+sobre+meu+reembolso" target="_blank" style="font-size:11px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:4px;">Dúvidas sobre reembolso? <svg width="14" height="14" fill="#25D366" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"/>
+</svg>
+</a>
+</div>
+</div>
+
+<!-- ====== PERFIL ====== -->
+<div id="v-perfil" style="display:none;">
+  <!-- BANNER -->
+  <div class="fu" style="background:linear-gradient(135deg,#032b57,#0284c7,#034480);border-radius:1.4rem;padding:24px;color:#fff;display:flex;align-items:center;gap:20px;margin-bottom:16px;">
+    <div style="position:relative;flex-shrink:0;">
+<div style="width:80px;height:80px;border-radius:24px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;">JS</div>
+<div style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15);font-size:12px;">📷</div>
+</div>
+    <div style="flex:1;min-width:0;">
+<span class="badge" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);font-size:9px;">Mensalista</span>
+<div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:2px;">Matrícula #REM-0042</div>
+<div style="font-size:20px;font-weight:900;margin-top:6px;">João Silva</div>
+<div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;">(13) 99742-1804</div>
+</div>
+    <div style="display:flex;gap:10px;flex-shrink:0;">
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 18px;text-align:center;">
+<div style="font-size:24px;font-weight:900;">R$ 150</div>
+<div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;margin-top:2px;">Mensal</div>
+</div>
+      <div style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 18px;text-align:center;">
+<div style="font-size:24px;font-weight:900;">15</div>
+<div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;margin-top:2px;">Dia Venc.</div>
+</div>
+      <div style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:14px 18px;text-align:center;">
+<div style="font-size:13px;font-weight:900;color:#34d399;">Em dia</div>
+<div style="font-size:9px;color:rgba(255,255,255,.5);font-weight:700;text-transform:uppercase;margin-top:2px;">Status</div>
+</div>
+    </div>
+  </div>
+  <!-- GRID -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;" class="fu d1">
+    <div class="card" style="cursor:pointer;" onclick="openM('assinatura')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#eff6ff;color:#034480;display:flex;align-items:center;justify-content:center;font-size:16px;">🛡️</div>
+<div>
+<div style="font-size:13px;font-weight:800;">Minha Assinatura</div>
+<div style="font-size:10px;color:var(--dim);">Plano atual e mensalidade</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--muted);line-height:1.7;">Gerencie seu plano, altere o dia de vencimento ou solicite cancelamento sem fidelidade.</div>
+</div>
+    <div class="card" style="cursor:pointer;" onclick="openM('meus-ev')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#eff6ff;color:#034480;display:flex;align-items:center;justify-content:center;font-size:16px;">📅</div>
+<div>
+<div style="font-size:13px;font-weight:800;">Meus Eventos</div>
+<div style="font-size:10px;color:var(--dim);">Inscrições e roteiros</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--muted);line-height:1.7;">Veja seus ingressos confirmados, vouchers e cronograma detalhado das saídas.</div>
+</div>
+    <div class="card" style="cursor:pointer;" onclick="openM('senha')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#f1f5f9;color:#64748b;display:flex;align-items:center;justify-content:center;font-size:16px;">🔒</div>
+<div>
+<div style="font-size:13px;font-weight:800;">Mudar Senha</div>
+<div style="font-size:10px;color:var(--dim);">Credenciais de acesso</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--muted);line-height:1.7;">Atualize sua senha com requisitos de segurança: 8+ caracteres, maiúscula e número.</div>
+</div>
+    <div class="card" style="cursor:pointer;" onclick="window.open('https://wa.me/5513997421804','_blank')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#ecfdf5;color:#10b981;display:flex;align-items:center;justify-content:center;font-size:16px;">💬</div>
+<div>
+<div style="font-size:13px;font-weight:800;">Suporte</div>
+<div style="font-size:10px;color:var(--dim);">Atendimento WhatsApp</div>
+</div>
+</div>
+<span class="badge bg" style="font-size:8px;">Online · Ter a Dom 06h–18h</span>
+</div>
+    <div class="card" style="cursor:pointer;" onclick="openM('instalar')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:16px;">📱</div>
+<div>
+<div style="font-size:13px;font-weight:800;">Instalar Aplicativo</div>
+<div style="font-size:10px;color:var(--dim);">Atalho na tela inicial</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--muted);line-height:1.7;">Adicione o Remoterapia como app nativo no seu celular, sem baixar da loja.</div>
+</div>
+    <div class="card" style="cursor:pointer;border-color:#fecaca;" onclick="openM('logout')">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:36px;height:36px;border-radius:12px;background:#fef2f2;color:#f43f5e;display:flex;align-items:center;justify-content:center;font-size:16px;">🚪</div>
+<div>
+<div style="font-size:13px;font-weight:800;color:#f43f5e;">Encerrar Sessão</div>
+<div style="font-size:10px;color:rgba(244,63,94,.5);">Sair deste aparelho</div>
+</div>
+</div>
+<div style="font-size:11px;color:var(--muted);line-height:1.7;">Desconecte sua conta. Será necessário fazer login novamente.</div>
+</div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- MODAL -->
+<div id="ml" style="display:none;" class="m-bg" onclick="closeM()">
+<div class="m-box" onclick="event.stopPropagation()">
+<div id="mb">
+</div>
+</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-el" style="display:none;">
+</div>
+
+<script>
+const T=['inicio','agendar','eventos','historico','perfil'],N={inicio:'Início',agendar:'Agendar',eventos:'Eventos',historico:'Histórico',perfil:'Meu Perfil'};
+function go(t){T.forEach(k=>{document.getElementById('v-'+k).style.display=k===t?'block':'none'});document.querySelectorAll('.ni').forEach((e,i)=>{e.classList.toggle('on',T[i]===t)});document.getElementById('pg-t').textContent=N[t];document.getElementById('v-'+t).querySelectorAll('.fu').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation=''});if(t==='agendar')resetW();}
+
+let W={};
+function resetW(){['st-turno','st-barco','st-lk','st-res'].forEach(s=>document.getElementById(s).classList.remove('show'));W={};document.querySelectorAll('.cal-d').forEach(c=>c.classList.remove('cn'));document.querySelectorAll('#v-agendar .chip').forEach(c=>c.classList.remove('con'));document.querySelectorAll('.lk').forEach(l=>l.classList.remove('lo'));document.querySelectorAll('#bl .card').forEach(b=>{b.style.borderColor='';b.style.background='';const ck=b.querySelector('.ck');if(ck){ck.style.borderColor='#e2e8f0';ck.innerHTML=''}});}
+function hideFrom(step){const order=['st-turno','st-barco','st-lk','st-res'];const idx=order.indexOf(step);for(let i=idx;i<order.length;i++)document.getElementById(order[i]).classList.remove('show');if(idx<=0){document.querySelectorAll('#v-agendar .chip').forEach(c=>c.classList.remove('con'));}if(idx<=1){document.querySelectorAll('#bl .card').forEach(b=>{b.style.borderColor='';b.style.background='';const ck=b.querySelector('.ck');if(ck){ck.style.borderColor='#e2e8f0';ck.innerHTML=''}});}if(idx<=2){document.querySelectorAll('.lk').forEach(l=>l.classList.remove('lo'));}}
+function pickDay(el){document.querySelectorAll('.cal-d').forEach(c=>c.classList.remove('cn'));el.classList.add('cn');W.dia=el.textContent;hideFrom('st-turno');setTimeout(()=>document.getElementById('st-turno').classList.add('show'),50);}
+function pickTurno(el){el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('con'));el.classList.add('con');W.turno=el.textContent;hideFrom('st-barco');setTimeout(()=>document.getElementById('st-barco').classList.add('show'),50);}
+function pickBoat(el){document.querySelectorAll('#bl .card').forEach(b=>{b.style.borderColor='';b.style.background='';const ck=b.querySelector('.ck');if(ck){ck.style.borderColor='#e2e8f0';ck.innerHTML=''}});el.style.borderColor='#0284c7';el.style.background='#eff6ff';const ck=el.querySelector('.ck');if(ck){ck.style.borderColor='#0284c7';ck.innerHTML='<svg width="14" height="14" fill="#0284c7" viewBox="0 0 24 24">
+<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+</svg>';}W.barco=el.querySelector('div div:first-child').textContent;hideFrom('st-lk');setTimeout(()=>document.getElementById('st-lk').classList.add('show'),50);}
+function pickLk(el){document.querySelectorAll('.lk').forEach(l=>l.classList.remove('lo'));el.classList.add('lo');W.locker=el.childNodes[1].textContent;document.getElementById('rd').textContent='SET '+W.dia;document.getElementById('rt').textContent=W.turno||'';document.getElementById('rb').textContent=W.barco||'';document.getElementById('rl').textContent=W.locker||'';document.getElementById('st-res').classList.add('show');}
+function pickF(el){el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('con'));el.classList.add('con');}
+function rate(id,n){document.getElementById(id).querySelectorAll('.star').forEach((s,i)=>{s.className=i<n?'star on':'star off'});const sc=document.getElementById(id).querySelector('span:last-child');if(sc)sc.textContent=n+'.0';}
+
+// TOAST
+function toast(msg,type){const el=document.getElementById('toast-el');el.className='toast '+(type==='ok'?'toast-ok':'toast-warn');el.textContent=msg;el.style.display='flex';setTimeout(()=>{el.classList.add('out');setTimeout(()=>{el.style.display='none';el.classList.remove('out')},350)},2500);}
+
+// MODALS
+const MX={
+notif:`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+<div style="display:flex;align-items:center;gap:8px;">
+<div style="width:34px;height:34px;border-radius:12px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:15px;">🔔</div>
+<div>
+<div style="font-size:15px;font-weight:900;">Avisos da Base</div>
+<div style="font-size:9px;color:var(--dim);">Canto do Forte · PG</div>
+</div>
+</div>
+<div style="display:flex;gap:6px;align-items:center;">
+<button style="font-size:9px;font-weight:900;color:#0284c7;background:none;border:none;cursor:pointer;">Limpar tudo</button>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--dim);">✕</button>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;">
+<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:14px;padding:14px;">
+<div style="font-size:11px;font-weight:900;color:#065f46;">Próxima Remada Confirmada</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px;">Sua reserva para 26/09 (08:00) está confirmada!</div>
+</div>
+<div style="background:#eff6ff;border:1px solid #bae6fd;border-radius:14px;padding:14px;">
+<div style="font-size:11px;font-weight:900;color:#1e40af;">Condição do Mar & Vento</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px;">Mar calmo e ventos favoráveis para navegação.</div>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:14px;">
+<div style="font-size:11px;font-weight:900;color:var(--muted);">Horário de Agendamento</div>
+<div style="font-size:11px;color:var(--dim);margin-top:3px;">Reservas até as 19h da véspera.</div>
+</div>
+</div>
+<button class="btn bgh" style="width:100%;margin-top:14px;" onclick="closeM()">Fechar</button>`,
+logout:`<div style="text-align:center;">
+<div style="width:52px;height:52px;border-radius:18px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;">🚪</div>
+<div style="font-size:17px;font-weight:900;">Encerrar Sessão Náutica?</div>
+<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6;">Deseja desconectar sua conta deste dispositivo? Você precisará informar seu e-mail ou WhatsApp e senha para acessar novamente.</div>
+<div style="display:flex;gap:8px;margin-top:18px;">
+<button class="btn bgh" style="flex:1;" onclick="closeM()">Cancelar</button>
+<button class="btn brf" style="flex:1;" onclick="closeM();toast('Sessão encerrada','ok')">Sim, Desconectar</button>
+</div>
+</div>`,
+cancelar:`<div style="text-align:center;">
+<div style="width:52px;height:52px;border-radius:18px;background:#fef2f2;border:1px solid #fecaca;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:#f43f5e;font-weight:900;">✕</div>
+<div style="font-size:17px;font-weight:900;">Cancelar Reserva?</div>
+<div style="font-size:12px;color:var(--muted);margin-top:8px;">Tem certeza que deseja cancelar sua reserva do dia 26 de setembro de 2026?</div>
+<div style="display:flex;gap:8px;margin-top:18px;">
+<button class="btn bgh" style="flex:1;" onclick="closeM()">Manter Reserva</button>
+<button class="btn brf" style="flex:1;" onclick="closeM();toast('Reserva cancelada com sucesso','ok')">Sim, Cancelar</button>
+</div>
+</div>`,
+senha:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div>
+<span class="badge bs" style="margin-bottom:6px;">Segurança da Conta</span>
+<div style="font-size:15px;font-weight:900;margin-top:4px;">Alterar Senha de Acesso</div>
+</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;">
+<div>
+<div style="font-size:9px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">Senha Atual</div>
+<input type="password" placeholder="••••••••" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;">
+</div>
+<div>
+<div style="font-size:9px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">Nova Senha</div>
+<input type="password" placeholder="Mín 8 chars, 1 maiúscula, 1 número" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;">
+</div>
+<div style="display:flex;gap:10px;font-size:10px;color:var(--green);font-weight:700;">
+<span>✓ 8+ letras</span>
+<span>✓ 1 Maiúscula</span>
+<span>✓ 1 Número</span>
+</div>
+<div>
+<div style="font-size:9px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:4px;">Confirmar Nova Senha</div>
+<input type="password" placeholder="Repita" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid #e2e8f0;font-size:13px;font-family:inherit;outline:none;">
+</div>
+</div>
+<button class="btn bb" style="width:100%;margin-top:16px;" onclick="closeM();toast('Senha alterada com sucesso!','ok')">Salvar Nova Senha</button>
+</div>`,
+info:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:17px;font-weight:900;">Expedição Ilha das Palmas</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
+<div style="font-size:9px;font-weight:700;color:var(--dim);">Ponto de Saída</div>
+<div style="font-size:12px;font-weight:900;margin-top:4px;">Canto do Forte</div>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
+<div style="font-size:9px;font-weight:700;color:var(--dim);">Tempo Estimado</div>
+<div style="font-size:12px;font-weight:900;margin-top:4px;">2h30</div>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;text-align:center;">
+<div style="font-size:9px;font-weight:700;color:var(--dim);">Nível</div>
+<div style="font-size:12px;font-weight:900;margin-top:4px;">Iniciante</div>
+</div>
+</div>
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:6px;">Programação</div>
+<div style="font-size:12px;color:var(--muted);line-height:2;margin-bottom:16px;">
+<strong>05:15</strong> — Recepção e coletes<br>
+<strong>05:30</strong> — Início da remada<br>
+<strong>07:00</strong> — Café Caiçara na areia<br>
+<strong>07:45</strong> — Retorno e fotos</div>
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:6px;">Inclusos</div>
+<div style="font-size:12px;color:var(--muted);line-height:2;">✓ Caiaque Solo ou Duplo<br>✓ Colete salva-vidas<br>✓ Café caiçara<br>✓ Fotos e vídeos GoPro</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:14px;border-top:1px solid #e2e8f0;">
+<span style="font-size:20px;font-weight:900;">R$ 120,00</span>
+<button class="btn bb" onclick="openM('checkout')">Garantir Minha Vaga ➔</button>
+</div>
+</div>`,
+checkout:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:15px;font-weight:900;">Checkout</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center;margin-bottom:14px;">
+<div style="width:48px;height:36px;border-radius:8px;background:linear-gradient(135deg,#0369a1,#0c4a6e);">
+</div>
+<div>
+<div style="font-size:12px;font-weight:900;">Expedição Ilha das Palmas</div>
+<div style="font-size:11px;color:#0284c7;font-weight:700;">R$ 120/pessoa</div>
+</div>
+</div>
+<div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:12px;display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+<span style="color:#10b981;font-weight:900;font-size:16px;">✓</span>
+<span style="font-size:12px;font-weight:800;">Aluno Identificado: João Silva</span>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Participantes</div>
+<div style="display:flex;align-items:center;gap:12px;">
+<button class="cnt-b" onclick="cntP(-1)">−</button>
+<span style="font-size:18px;font-weight:900;min-width:28px;text-align:center;" id="pc">1</span>
+<button class="cnt-b" onclick="cntP(1)">+</button>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Embarcação</div>
+<select style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #e2e8f0;font-size:12px;font-family:inherit;">
+<option>Caiaque Oceânico 1 (Solo)</option>
+<option>Caiaque Oceânico 2 (Solo)</option>
+<option>Caiaque Duplo 1</option>
+</select>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Pagamento</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+<div class="chip con" onclick="pickF(this)">❖ Pix Instantâneo</div>
+<div class="chip" onclick="pickF(this)">💳 Cartão Crédito</div>
+</div>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px;display:flex;justify-content:space-between;margin-bottom:14px;">
+<span style="font-size:12px;color:var(--dim);font-weight:700;">Total</span>
+<span style="font-size:20px;font-weight:900;" id="pt">R$ 120,00</span>
+</div>
+<button class="btn bb" style="width:100%;padding:16px;font-size:12px;" onclick="closeM();toast('Inscrição confirmada! Verifique seus vouchers em Meu Perfil.','ok')">Pagar e Garantir Minha Vaga ➔</button>
+</div>`,
+clube:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:15px;font-weight:900;">Adesão ao Clube</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Dia do Vencimento</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+<div class="chip" onclick="pickF(this)">DIA 05</div>
+<div class="chip" onclick="pickF(this)">DIA 10</div>
+<div class="chip con" onclick="pickF(this)">DIA 15</div>
+<div class="chip" onclick="pickF(this)">DIA 20</div>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:10px;font-weight:900;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Pagamento</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+<div class="chip con" onclick="pickF(this)">❖ Pix Mensal</div>
+<div class="chip" onclick="pickF(this)">💳 Cartão Recorrente</div>
+</div>
+</div>
+<button class="btn bb" style="width:100%;padding:16px;font-size:12px;" onclick="closeM();toast('Assinatura iniciada com sucesso!','ok')">Iniciar Assinatura</button>
+</div>`,
+assinatura:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:15px;font-weight:900;">Minha Assinatura</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="background:linear-gradient(135deg,#0284c7,#034480);border-radius:14px;padding:18px;color:#fff;margin-bottom:16px;">
+<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.7;">Plano Ativo</div>
+<div style="font-size:20px;font-weight:900;margin-top:4px;">Mensalista</div>
+<div style="font-size:12px;opacity:.65;margin-top:3px;">R$ 150/mês · Venc. dia 15</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;margin-bottom:16px;">
+<div style="display:flex;justify-content:space-between;">
+<span style="color:var(--muted);">Status</span>
+<span class="badge bg">Em dia</span>
+</div>
+<div style="display:flex;justify-content:space-between;">
+<span style="color:var(--muted);">Créditos</span>
+<span style="font-weight:800;">8/mês</span>
+</div>
+<div style="display:flex;justify-content:space-between;">
+<span style="color:var(--muted);">Sessões/semana</span>
+<span style="font-weight:800;">2</span>
+</div>
+</div>
+<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:14px;padding:16px;">
+<div style="font-size:11px;font-weight:900;color:var(--muted);margin-bottom:4px;">Gerenciar Assinatura</div>
+<div style="font-size:11px;color:var(--dim);margin-bottom:10px;">Cancele a qualquer momento sem fidelidade.</div>
+<button class="btn bro" style="width:100%;" onclick="toast('Cancelamento solicitado. Acesso até dia 15.','warn');closeM();">Cancelar Assinatura</button>
+</div>
+</div>`,
+'meus-ev':`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:15px;font-weight:900;">Meus Eventos</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="text-align:center;padding:28px 0;">
+<div style="width:52px;height:52px;border-radius:18px;background:#eff6ff;color:#0284c7;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;">🧭</div>
+<div style="font-size:13px;font-weight:800;">Nenhuma inscrição ativa</div>
+<div style="font-size:11px;color:var(--dim);margin-top:4px;">Seus ingressos e vouchers aparecerão aqui.</div>
+<button class="btn bb" style="margin-top:16px;" onclick="closeM();go('eventos');">Explorar Próximos Eventos ➔</button>
+</div>
+</div>`,
+instalar:`<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:14px;">
+<div>
+<div style="font-size:15px;font-weight:900;">Acesso Rápido Sem Lojas</div>
+<div style="font-size:11px;color:var(--muted);margin-top:3px;">Funciona como app nativo direto na tela inicial.</div>
+</div>
+<button onclick="closeM()" style="background:none;border:none;cursor:pointer;color:var(--dim);font-size:18px;">✕</button>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:10px;">
+<div style="font-size:12px;font-weight:900;">iPhone / iPad (Safari)</div>
+<div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7;">1. Toque no botão de Compartilhar (quadrado com seta)<br>2. Selecione "Adicionar à Tela de Início"</div>
+</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:16px;">
+<div style="font-size:12px;font-weight:900;">Android / Chrome</div>
+<div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7;">1. Toque nos três pontinhos (⋮) no topo<br>2. Selecione "Instalar Aplicativo"</div>
+</div>
+<button class="btn bb" style="width:100%;margin-top:16px;" onclick="closeM()">Entendido</button>
+</div>`
+};
+function openM(id){document.getElementById('mb').innerHTML=MX[id]||'';document.getElementById('ml').style.display='flex';}
+function closeM(){document.getElementById('ml').style.display='none';}
+
+let pC=1;function cntP(d){pC=Math.max(1,Math.min(10,pC+d));document.getElementById('pc').textContent=pC;document.getElementById('pt').textContent='R$ '+(120*pC)+',00';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+</script>
+</body>
+</html>

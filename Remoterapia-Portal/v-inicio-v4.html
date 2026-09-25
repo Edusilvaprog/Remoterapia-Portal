@@ -1,0 +1,24 @@
+<div id="v-inicio">
+  <!-- COTAS + STATS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px;" class="fu">
+    <div class="stat-card" style="border-top:3px solid #E52E87;"><div class="stat-val">1<span style="font-size:14px;color:var(--dim);font-weight:700;">/2</span></div><div class="stat-lbl">Cotas da Semana</div><div class="pill-t" style="margin-top:8px;"><div class="pill-u"></div><div class="pill-f"></div></div></div>
+    <div class="stat-card" style="border-top:3px solid #0284c7;"><div class="stat-val">8</div><div class="stat-lbl">Créditos Mensais</div><div style="margin-top:6px;"><span class="badge bg" style="font-size:8px;">Renovam dia 15</span></div></div>
+    <div class="stat-card" style="border-top:3px solid #10b981;"><div class="stat-val">2</div><div class="stat-lbl">Reservas Ativas</div><div style="margin-top:6px;"><span class="badge bg" style="font-size:8px;">Confirmadas</span></div></div>
+    <div class="stat-card" style="border-top:3px solid #034480;"><div style="margin-bottom:4px;"><span class="badge bs">Mensalista</span></div><div class="stat-lbl" style="margin-top:6px;">Plano Ativo</div><div style="font-size:10px;color:var(--green);font-weight:700;margin-top:4px;">Em dia · Venc. 15</div></div>
+  </div>
+  <button class="btn bpk fu d1" onclick="go('agendar')" style="width:100%;padding:16px;font-size:13px;margin-bottom:18px;">Solicitar Novo Agendamento ➔</button>
+  <!-- AGENDAMENTOS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;" class="fu d2"><span class="badge bn">Seus Agendamentos (2)</span><span style="font-size:10px;font-weight:800;color:var(--dim);">Próximas remadas</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" class="fu d3">
+    <div class="card" style="border-left:4px solid #1D70B8;display:flex;gap:16px;">
+      <div style="text-align:center;min-width:56px;background:#eff6ff;border:1px solid #bae6fd;border-radius:14px;padding:10px 6px;"><div style="font-size:9px;font-weight:900;color:#0284c7;">SÁB</div><div style="font-size:26px;font-weight:900;line-height:1;">26</div><div style="font-size:8px;color:var(--dim);font-weight:700;">SET</div></div>
+      <div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--dim);">Clube Mensalista</div><div style="font-size:16px;font-weight:900;">08:00 às 10:00</div><div style="display:flex;align-items:center;gap:6px;margin-top:6px;"><span class="badge bg" style="font-size:8px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:3px;box-shadow:0 0 5px #10b981;"></span>Confirmado</span></div><div style="font-size:10px;color:var(--muted);margin-top:8px;">🛶 Caiaque Oceânico 2 · 🔑 Locker #04</div><button class="btn bro" style="margin-top:10px;font-size:9px;padding:7px 14px;" onclick="openM('cancelar')">✕ Cancelar</button></div>
+    </div>
+    <div class="card" style="border-left:4px solid #1D70B8;display:flex;gap:16px;">
+      <div style="text-align:center;min-width:56px;background:#eff6ff;border:1px solid #bae6fd;border-radius:14px;padding:10px 6px;"><div style="font-size:9px;font-weight:900;color:#0284c7;">TER</div><div style="font-size:26px;font-weight:900;line-height:1;">29</div><div style="font-size:8px;color:var(--dim);font-weight:700;">SET</div></div>
+      <div style="flex:1;"><div style="font-size:11px;font-weight:700;color:var(--dim);">Clube Mensalista</div><div style="font-size:16px;font-weight:900;">06:00 às 08:00</div><div style="display:flex;align-items:center;gap:6px;margin-top:6px;"><span class="badge bg" style="font-size:8px;"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#10b981;margin-right:3px;box-shadow:0 0 5px #10b981;"></span>Confirmado</span></div><div style="font-size:10px;color:var(--muted);margin-top:8px;">🛶 Caiaque Duplo 1 · 🔑 Locker #02</div><button class="btn bro" style="margin-top:10px;font-size:9px;padding:7px 14px;" onclick="openM('cancelar')">✕ Cancelar</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== AGENDAR ====== -->
